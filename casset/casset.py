@@ -2,18 +2,42 @@ import csv
 import yaml
 from api import CoinBaseAPI
 
-rows = []
+initialInvestment = {}
 with open('transaction_log.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        rows.append(row)
+        currency = row['currency']
+        if currency in initialInvestment:
+            initialInvestment[currency] += float(row['price'])
+        else:
+            initialInvestment[currency] = float(row['price'])
 
-print(rows)
+print(initialInvestment)
 
 api_cfg = {}
 with open('api_config.yaml') as f:
     api_cfg = yaml.load(f)
 
 api = CoinBaseAPI(api_cfg['key'], api_cfg['secret'], api_cfg['version'])
-r = api.getAccounts()
-print(r.json())
+r = api.getAccounts().json()
+
+currentPrice = {}
+for wallet in r['data']:
+    currency = wallet['currency']['code']
+    if currency in currentPrice:
+        currentPrice[currency] += float(wallet['native_balance']['amount'])
+    else:
+        currentPrice[currency] = float(wallet['native_balance']['amount'])
+
+print(currentPrice)
+
+def roi(initial, current):
+    return ((current / initial)-1)*100
+
+rois = {}
+for currency, value in currentPrice.items():
+    if currency in initialInvestment:
+        cost = initialInvestment[currency]
+        rois[currency] = roi(cost, value)
+
+print(rois)
