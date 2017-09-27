@@ -19,10 +19,10 @@ with open('api_config.yaml') as f:
     api_cfg = yaml.load(f)
 
 api = CoinBaseAPI(api_cfg['key'], api_cfg['secret'], api_cfg['version'])
-r = api.getAccounts().json()
+accounts = api.getAccounts()
 
 currentPrice = {}
-for wallet in r['data']:
+for wallet in accounts:
     currency = wallet['currency']['code']
     if currency in currentPrice:
         currentPrice[currency] += float(wallet['native_balance']['amount'])
@@ -41,3 +41,5 @@ for currency, value in currentPrice.items():
         rois[currency] = roi(cost, value)
 
 print(rois)
+r = api.getBuyPrice('LTC')['amount']
+print(r)

@@ -1,5 +1,5 @@
-casset/api_config.yaml
-casset/transaction_log.csv
+api_config.yaml
+transaction_log.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
