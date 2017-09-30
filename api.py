@@ -58,5 +58,5 @@ class CoinBaseAPI:
     def getTime(self):
         return self.__getData('time')
 
-    def getBuyPrice(self, currency):
-        return self.__getData('prices/'+currency+'-GBP/buy')
+    def getSpotPrice(self, currency):
+        return self.__getData('prices/'+currency+'-GBP/spot')
