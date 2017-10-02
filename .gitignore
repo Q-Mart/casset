@@ -1,5 +1,6 @@
 api_config.yaml
 transaction_log.csv
+.STATE
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
