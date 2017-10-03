@@ -3,7 +3,12 @@
 import csv
 import yaml
 import os
+import argparse
 from api import CoinBaseAPI
+
+parser = argparse.ArgumentParser(description='Coinase metrics for i3blocks')
+parser.add_argument('--toggle', action='store_true')
+args = parser.parse_args()
 
 dirPath = os.path.dirname(os.path.realpath(__file__))+'/'
 api_cfg = {}
@@ -59,10 +64,16 @@ def getSpotPrices():
 with open(dirPath+'.STATE') as statefile:
     state = statefile.read()
 
-with open(dirPath+'.STATE', 'w') as statefile:
-    if state == 'ROI':
-        print(getROIs())
-        statefile.write('PRICE')
-    else:
-        print(getSpotPrices())
-        statefile.write('ROI')
+if args.toggle == True:
+    with open(dirPath+'.STATE', 'w') as statefile:
+        if state == 'ROI':
+            statefile.write('PRICE')
+            state = 'Price'
+        else:
+            statefile.write('ROI')
+            state = 'ROI'
+
+if state == 'ROI':
+    print(getROIs())
+else:
+    print(getSpotPrices())
