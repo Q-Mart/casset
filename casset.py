@@ -10,6 +10,10 @@ parser = argparse.ArgumentParser(description='Coinase metrics for i3blocks')
 parser.add_argument('--toggle', action='store_true')
 args = parser.parse_args()
 
+click = os.environ.get('BLOCK_BUTTON', '0')
+if click in '13':
+    args.toggle = True
+
 dirPath = os.path.dirname(os.path.realpath(__file__))+'/'
 api_cfg = {}
 with open(dirPath+'api_config.yaml') as f:
@@ -72,6 +76,8 @@ if args.toggle == True:
         else:
             statefile.write('ROI')
             state = 'ROI'
+
+    args.toggle = False
 
 if state == 'ROI':
     print(getROIs())
