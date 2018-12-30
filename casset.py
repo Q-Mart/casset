@@ -27,6 +27,12 @@ def prettyFmt(BTC, ETH, LTC):
     colorisedCoins = list(map(colorise, [BTC, ETH, LTC]))
     return ':{0} Ξ:{1} Ł:{2}'.format(*colorisedCoins)
 
+def getSpotPrices():
+    LTCSpot = api.getSpotPrice('LTC')['amount']
+    BTCSpot = api.getSpotPrice('BTC')['amount']
+    ETHSpot = api.getSpotPrice('ETH')['amount']
+    return BTCSpot, ETHSpot, LTCSpot
+
 def getROIs():
     initialInvestment = {}
     with open(dirPath+'transaction_log.csv') as csvfile:
@@ -40,13 +46,19 @@ def getROIs():
 
     accounts = api.getAccounts()
 
+    btc, eth, ltc = getSpotPrices()
+    spotPrices = {'BTC': float(btc), 'ETH': float(eth), 'LTC': float(ltc)}
+
     currentPrice = {}
     for wallet in accounts:
         currency = wallet['currency']['code']
+
+        if currency == 'GBP': continue
+
         if currency in currentPrice:
-            currentPrice[currency] += float(wallet['native_balance']['amount'])
+            currentPrice[currency] += float(wallet['balance']['amount']) * spotPrices[currency]
         else:
-            currentPrice[currency] = float(wallet['native_balance']['amount'])
+            currentPrice[currency] = float(wallet['balance']['amount']) * spotPrices[currency]
 
     def roi(initial, current):
         return round(((current / initial)-1)*100,2)
@@ -58,12 +70,6 @@ def getROIs():
             rois[currency] = roi(cost, value)
 
     return prettyFmt(rois['BTC'], rois['ETH'], rois['LTC'])
-
-def getSpotPrices():
-    LTCSpot = api.getSpotPrice('LTC')['amount']
-    BTCSpot = api.getSpotPrice('BTC')['amount']
-    ETHSpot = api.getSpotPrice('ETH')['amount']
-    return prettyFmt(BTCSpot, ETHSpot, LTCSpot)
 
 with open(dirPath+'.STATE') as statefile:
     state = statefile.read()
@@ -82,4 +88,5 @@ if args.toggle == True:
 if state == 'ROI':
     print(getROIs())
 else:
-    print(getSpotPrices())
+    BTCSpot, ETHSpot, LTCSpot = getSpotPrices()
+    print(prettyFmt(BTCSpot, ETHSpot, LTCSpot))
