@@ -55,10 +55,11 @@ def getROIs():
 
         if currency == 'GBP': continue
 
-        if currency in currentPrice:
-            currentPrice[currency] += float(wallet['balance']['amount']) * spotPrices[currency]
-        else:
-            currentPrice[currency] = float(wallet['balance']['amount']) * spotPrices[currency]
+        if currency in spotPrices:
+            if currency in currentPrice:
+                currentPrice[currency] += float(wallet['balance']['amount']) * spotPrices[currency]
+            else:
+                currentPrice[currency] = float(wallet['balance']['amount']) * spotPrices[currency]
 
     def roi(initial, current):
         return round(((current / initial)-1)*100,2)
