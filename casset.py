@@ -17,7 +17,7 @@ if click in '13':
 dirPath = os.path.dirname(os.path.realpath(__file__))+'/'
 api_cfg = {}
 with open(dirPath+'api_config.yaml') as f:
-    api_cfg = yaml.load(f)
+    api_cfg = yaml.load(f, yaml.FullLoader)
 
 api = CoinBaseAPI(api_cfg['key'], api_cfg['secret'], api_cfg['version'])
 
