@@ -4,6 +4,7 @@ import csv
 import yaml
 import os
 import argparse
+import math
 from api import CoinBaseAPI
 
 parser = argparse.ArgumentParser(description='Coinase metrics for i3blocks')
@@ -23,9 +24,7 @@ api = CoinBaseAPI(api_cfg['key'], api_cfg['secret'], api_cfg['version'])
 
 
 def prettyFmt(BTC, ETH, LTC):
-    colorise = lambda x: '<span foreground="#00FF00">{0}</span>'.format(x)
-    colorisedCoins = list(map(colorise, [BTC, ETH, LTC]))
-    return ':{0} Ξ:{1} Ł:{2}'.format(*colorisedCoins)
+    return ':{0} Ξ:{1} Ł:{2}'.format(BTC, ETH, LTC)
 
 def getSpotPrices():
     LTCSpot = api.getSpotPrice('LTC')['amount']
@@ -90,4 +89,10 @@ if state == 'ROI':
     print(getROIs())
 else:
     BTCSpot, ETHSpot, LTCSpot = getSpotPrices()
+
+    round_2_dp = lambda x: round(float(x), 2)
+    BTCSpot = round_2_dp(BTCSpot)
+    ETHSpot = round_2_dp(ETHSpot)
+    LTCSpot = round_2_dp(LTCSpot)
+
     print(prettyFmt(BTCSpot, ETHSpot, LTCSpot))
